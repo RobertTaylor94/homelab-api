@@ -6,7 +6,7 @@ type StepCount struct {
 }
 
 type StepCountData struct {
-	Metrics []StepCountMetrics `json:"metris"`
+	Metrics []StepCountMetrics `json:"metrics"`
 }
 
 type StepCountMetrics struct {
@@ -16,9 +16,9 @@ type StepCountMetrics struct {
 }
 
 type StepCountDaily struct {
-	Date     string `json:"date"`
-	Source   string `json:"source"`
-	Quantity int    `json:"qty"`
+	Date     string  `json:"date"`
+	Source   string  `json:"source"`
+	Quantity float32 `json:"qty"`
 }
 
 // exercise minutes

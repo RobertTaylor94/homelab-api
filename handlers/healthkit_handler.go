@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"math"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,7 +21,6 @@ func HealthKitHeartPost(db *sql.DB) gin.HandlerFunc {
 		}
 
 		for _, d := range heartData.Data.Metrics[0].Data {
-			fmt.Println("Attempting to save health data...")
 			if err := saveHeartData(db, &d); err != nil {
 				fmt.Println(err.Error())
 				c.JSON(http.StatusInternalServerError, err.Error())
@@ -31,17 +29,21 @@ func HealthKitHeartPost(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
-func saveHeartData(db *sql.DB, d *models.HeartRates) error {
-	parsedTime, err := parseTimeHealth(d.Date)
-	if err != nil {
-		return fmt.Errorf("failed to parse timestamp: %v", err)
-	}
+func HealthKitStepsPost(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		requestBody, _ := c.GetRawData()
 
-	query := `INSERT INTO healthkit.heart_data (recorded_at, avg_heart_rate) VALUES ($1, $2) ON CONFLICT (recorded_at) DO NOTHING`
-	_, err = db.Exec(query, parsedTime, math.Round(float64(d.Average)))
-	if err != nil {
-		return fmt.Errorf("failed to save heart data: %v", err)
-	}
+		var stepData models.StepCount
 
-	return nil
+		if err := json.Unmarshal(requestBody, &stepData); err != nil {
+			fmt.Printf("failed to unmarshal json: %v\n", err)
+		}
+
+		for _, d := range stepData.Data.Metrics[0].Data {
+			if err := saveStepData(db, &d); err != nil {
+				fmt.Println(err.Error())
+				c.JSON(http.StatusInternalServerError, err.Error())
+			}
+		}
+	}
 }

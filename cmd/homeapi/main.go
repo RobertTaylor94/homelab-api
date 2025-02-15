@@ -17,7 +17,7 @@ type EnvOptions struct {
 	PgUser string `long:"pg-user" env:"POSTGRES_USER" description:"postgres db user name" default:"" required:"true"`
 	PgPass string `long:"pg-pass" env:"POSTGRES_PASS" description:"postgres db password" default:"" required:"true"`
 	PgDb   string `long:"pg-db" env:"POSTGRES_DB" description:"postgres db name" default:"" required:"true"`
-	Port   string `long:"port" env:API_PORT" required:"true"`
+	Port   string `long:"port" env:"API_PORT" default:"" required:"true"`
 }
 
 var opts EnvOptions
@@ -57,8 +57,9 @@ func main() {
 	r.GET("/", handlers.Ping())
 	r.POST("/api/homekit", handlers.HomeKitPost(db))
 	r.POST("/api/healthkit/heart", handlers.HealthKitHeartPost(db))
+	r.POST("/api/healthkit/steps", handlers.HealthKitStepsPost(db))
 
-	fmt.Println("Starting HomeAPI on Port: 8081")
+	fmt.Printf("Starting HomeAPI on Port: %v\n", opts.Port)
 	err = s.ListenAndServe()
 	if err != nil {
 		log.Fatalf("Error starting HomeAPI: %v", err)
