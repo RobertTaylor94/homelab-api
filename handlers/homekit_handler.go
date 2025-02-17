@@ -12,10 +12,6 @@ import (
 
 func HomeKitPost(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// authHeader := c.GetHeader("Authorization")
-
-		// isAuthed := checkAuth(authHeader)
-
 		requestBody, _ := c.GetRawData()
 
 		var homeStatus models.HomeStatus
@@ -51,16 +47,5 @@ func saveHomeStatus(db *sql.DB, homeStatus *models.HomeStatusData) error {
 		return fmt.Errorf("failed to save home status: %v", err)
 	}
 
-	fmt.Println("succesfully saved data")
 	return nil
 }
-
-// func checkAuth(header string) bool {
-// 	return header == "Bearer andromeda1"
-// }
-
-// if value exists
-// dictionary with "data" : array
-// get value for data in DataJar
-// for each dict in data
-//
