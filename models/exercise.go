@@ -42,23 +42,23 @@ type ExerciseTimeDaily struct {
 	Source   string `json:"source"`
 }
 
-// active energy
-type ActiveEnergy struct {
-	Data ActiveEnergyData `json:"data"`
+// energy
+type Energy struct {
+	Data EnergyData `json:"data"`
 }
 
-type ActiveEnergyData struct {
-	Metrics ActiveEnergyMetrics `json:"metrics"`
+type EnergyData struct {
+	Metrics []EnergyMetrics `json:"metrics"`
 }
 
-type ActiveEnergyMetrics struct {
-	Units string              `json:"units,omitempty"`
-	Name  string              `json:"name,omitempty"`
-	Data  []ActiveEnergyDaily `json:"data"`
+type EnergyMetrics struct {
+	Units string        `json:"units,omitempty"`
+	Name  string        `json:"name,omitempty"`
+	Data  []EnergyDaily `json:"data"`
 }
 
-type ActiveEnergyDaily struct {
+type EnergyDaily struct {
 	Date     string  `json:"date,omitempty"`
 	Quantity float64 `json:"qty,omitempty"`
-	Source   string  `json:"source,omitempty"`
+	Type     string
 }

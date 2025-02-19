@@ -8,12 +8,15 @@ import (
 	"murvoth.co.uk/homeapi/models"
 )
 
+// saveHeartData is the helper function that executes a SQL query to save heart rate data to the database.
 func saveHeartData(db *sql.DB, d *models.HeartRates) error {
+	// parse time recieved in json to the correct format for the database
 	parsedTime, err := parseTimeHealth(d.Date)
 	if err != nil {
 		return fmt.Errorf("failed to parse timestamp: %v", err)
 	}
 
+	// sql query to insert heart rate data into the database, if entry exists with the same timestamp ignore the request to insert data
 	query := `INSERT INTO healthkit.heart_data (recorded_at, avg_heart_rate) VALUES ($1, $2) ON CONFLICT (recorded_at) DO NOTHING`
 	_, err = db.Exec(query, parsedTime, math.Round(float64(d.Average)))
 	if err != nil {
@@ -23,14 +26,34 @@ func saveHeartData(db *sql.DB, d *models.HeartRates) error {
 	return nil
 }
 
+// saveStepData is the helper function that executes a SQL query to save daily step count data to the database.
 func saveStepData(db *sql.DB, d *models.StepCountDaily) error {
+	// parse time recieved in json to the correct format for the database
 	parsedTime, err := parseTimeHealth(d.Date)
 	if err != nil {
 		return fmt.Errorf("failed to parse timestamp: %v", err)
 	}
 
+	// sql query to insert step data into the database, if entry exists with the same timestamp, update existing record with new data
 	query := `INSERT INTO healthkit.step_data (recorded_at, quantity) VALUES ($1, $2) ON CONFLICT (recorded_at) DO UPDATE SET quantity = EXCLUDED.quantity`
 	_, err = db.Exec(query, parsedTime, math.Round(float64(d.Quantity)))
+	if err != nil {
+		return fmt.Errorf("failed to save step data: %v", err)
+	}
+
+	return nil
+}
+
+func saveEnergyData(db *sql.DB, d *models.EnergyDaily) error {
+	// parse time recieved in json to the correct format for the database
+	parsedTime, err := parseTimeHealth(d.Date)
+	if err != nil {
+		return fmt.Errorf("failed to parse timestamp: %v", err)
+	}
+
+	// sql query to insert step data into the database, if entry exists with the same timestamp, update existing record with new data
+	query := `INSERT INTO healthkit.energy_data (recorded_at, quantity, energy_type) VALUES ($1, $2, $3) ON CONFLICT (recorded_at) DO UPDATE SET quantity = EXCLUDED.quantity`
+	_, err = db.Exec(query, parsedTime, math.Round(float64(d.Quantity)), d.Type)
 	if err != nil {
 		return fmt.Errorf("failed to save step data: %v", err)
 	}
