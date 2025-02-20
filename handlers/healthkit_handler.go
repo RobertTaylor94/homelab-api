@@ -10,7 +10,7 @@ import (
 	"murvoth.co.uk/homeapi/models"
 )
 
-// HealthKitHeartPost is the handler for saving heart rate data to the database. Will ignore already saved results if a batch request is made.
+// HealthKitHeartPost is the handler for saving heart rate data to the database.
 func HealthKitHeartPost(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		requestBody, _ := c.GetRawData()
@@ -32,7 +32,7 @@ func HealthKitHeartPost(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
-// HealthKitStepsPost is the handler for saving daily step count rate data to the database. Will update existing values if sent multiple times.
+// HealthKitStepsPost is the handler for saving daily step count rate data to the database.
 func HealthKitStepsPost(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		requestBody, _ := c.GetRawData()
@@ -54,6 +54,7 @@ func HealthKitStepsPost(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
+// HealthKitEnergyPost is the handler for saving daily burnt calrories to the database. Handles both active and basal energy burn.
 func HealthKitEnergyPost(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		requestBody, _ := c.GetRawData()
@@ -75,5 +76,29 @@ func HealthKitEnergyPost(db *sql.DB) gin.HandlerFunc {
 				}
 			}
 		}
+	}
+}
+
+// HealthKitSleepPost is the handler for saving sleep data
+func HealthKitSleepPost(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		requestBody, _ := c.GetRawData()
+
+		var sleepData models.SleepAnalysis
+
+		// unmarshal raw request data into energyData model
+		if err := json.Unmarshal(requestBody, &sleepData); err != nil {
+			fmt.Printf("failed to unmarshal json: %v\n", err)
+		}
+
+		for _, s := range sleepData.Data.Metrics {
+			for _, d := range s.Data {
+				if err := saveSleepData(db, &d); err != nil {
+					fmt.Println(err.Error())
+					c.JSON(http.StatusInternalServerError, err.Error())
+				}
+			}
+		}
+		c.JSON(200, "sleep data saved")
 	}
 }

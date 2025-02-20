@@ -63,6 +63,7 @@ func main() {
 	r.POST("/api/healthkit/heart", handlers.HealthKitHeartPost(db))
 	r.POST("/api/healthkit/steps", handlers.HealthKitStepsPost(db))
 	r.POST("/api/healthkit/energy", handlers.HealthKitEnergyPost(db))
+	r.POST("/api/healthkit/sleep", handlers.HealthKitSleepPost(db))
 
 	fmt.Printf("Starting HomeAPI on Port: %v\n", opts.Port)
 	err = s.ListenAndServe()

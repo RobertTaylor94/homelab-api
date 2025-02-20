@@ -15,6 +15,7 @@ type SleepAnalysisMetrics struct {
 }
 
 type SleepAnalysisDaily struct {
+	Date       string  `json:"date"`
 	InBedStart string  `json:"inBedStart"`
 	InBedEnd   string  `json:"inBedEnd"`
 	SleepStart string  `json:"sleepStart"`
