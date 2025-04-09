@@ -15,7 +15,7 @@ func Ping() gin.HandlerFunc {
 
 // helper to parse timestamp from string sent in JSON
 func parseTimeHome(timestamp string) (time.Time, error) {
-	layout := "2006-01-02T15:04:05Z"
+	layout := time.RFC3339
 	parsedTime, err := time.Parse(layout, timestamp)
 	if err != nil {
 		return time.Now(), fmt.Errorf("error parsing time: %v", err)
