@@ -10,6 +10,7 @@ import (
 	"github.com/jessevdk/go-flags"
 	_ "github.com/lib/pq"
 	"murvoth.co.uk/homeapi/handlers"
+	"murvoth.co.uk/homeapi/util"
 )
 
 type EnvOptions struct {
@@ -43,6 +44,14 @@ func main() {
 	}
 
 	fmt.Println("Connected to the database successfully!")
+
+	// Initialise database if needed
+	if err := util.InitHealthKit(db); err != nil {
+		log.Fatalf("Error initializing healthkit schema/tables: %v", err)
+	}
+	if err := util.InitHomeKit(db); err != nil {
+		log.Fatalf("Error initializing homekit schema/tables: %v", err)
+	}
 
 	gin.SetMode(gin.ReleaseMode)
 
